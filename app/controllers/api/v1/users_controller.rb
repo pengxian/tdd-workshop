@@ -1,4 +1,4 @@
-class Api::V1::UsersController < ApplicationController
+class Api::V1::UsersController < Api::V1::ApplicationController
   def show
     @user = User.find params[:id]
     render json: @user
@@ -11,6 +11,28 @@ class Api::V1::UsersController < ApplicationController
     else
       render json: { errors: user.errors }, status: 422
     end
+  end
+
+  def update
+    return render json: { errors: 'invalid user id' }, status: 422 if params[:id].present? && params[:id].to_i == 0
+    if user_params[:password].present? && user_params[:password_confirmation].present?
+      return render json: { errors: 'invalid password' }, status: 422 if user_params[:password] != user_params[:password_confirmation]
+    end
+    user = User.find_by_id(params[:id])
+    return render json: { errors: 'record not found' }, status: 404 unless user.present?
+    if user.update(user_params)
+      render json: user, status: 200
+    else
+      render json: { errors: user.errors }, status: 422
+    end
+  end
+
+  def destroy
+    return render json: { errors: 'invalid user id' }, status: 422 if params[:id].present? && params[:id].to_i == 0
+    user = User.find_by_id(params[:id])
+    return render json: { errors: 'record not found' }, status: 404 unless user.present?
+    user.destroy
+    render json: { result: true }, status: 204
   end
 
   private
