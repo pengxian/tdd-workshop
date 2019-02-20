@@ -10,7 +10,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
     it { should respond_with 200 }
     it 'returns a user response' do
       json_response = JSON.parse response.body, symbolize_names: true
-      expect(json_response[:email]).to eq @user.email
+      expect(json_response[:data][:attributes][:email]).to eq @user.email
     end
   end
 
@@ -23,7 +23,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it { should respond_with 201 }
       it 'returns the user record' do
         json_response = JSON.parse response.body, symbolize_names: true
-        expect(json_response[:email]).to eq @user_attributes[:email]
+        expect(json_response[:data][:attributes][:email]).to eq @user_attributes[:email]
       end
     end
 
@@ -51,7 +51,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it { should respond_with 200 }
       it 'returns the user record' do
         json_response = JSON.parse response.body, symbolize_names: true
-        expect(json_response[:email]).to eq @update_attributes[:email]
+        expect(json_response[:data][:attributes][:email]).to eq @update_attributes[:email]
       end
     end
 
