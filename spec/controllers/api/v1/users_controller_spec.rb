@@ -35,7 +35,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       it { should respond_with 422 }
       it 'reader error json' do
         json_response = JSON.parse response.body, symbolize_names: true
-        expect(json_response[:errors][:email]).to include("can't be blank")
+        expect(json_response[:errors].first[:detail]).to include("can't be blank")
       end
     end
   end

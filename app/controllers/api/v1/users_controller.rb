@@ -9,7 +9,7 @@ class Api::V1::UsersController < Api::V1::ApplicationController
     if user.save
       render json: UserSerializer.new(user), status: 201
     else
-      render json: { errors: user.errors }, status: 422
+      render json: { errors: ErrorSerializer.new(user).serialized_json }, status: 422
     end
   end
 
