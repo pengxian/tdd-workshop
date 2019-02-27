@@ -18,8 +18,7 @@ class Api::V1::UsersController < Api::V1::ApplicationController
     if user_params[:password].present? && user_params[:password_confirmation].present?
       return render json: { errors: 'invalid password' }, status: 422 if user_params[:password] != user_params[:password_confirmation]
     end
-    user = User.find_by_id(params[:id])
-    return render json: { errors: 'record not found' }, status: 404 unless user.present?
+    user = current_user
     if user.update(user_params)
       render json: UserSerializer.new(user), status: 200
     else
@@ -29,7 +28,7 @@ class Api::V1::UsersController < Api::V1::ApplicationController
 
   def destroy
     return render json: { errors: 'invalid user id' }, status: 422 if params[:id].present? && params[:id].to_i == 0
-    user = User.find_by_id(params[:id])
+    user = current_user
     return render json: { errors: 'record not found' }, status: 404 unless user.present?
     user.destroy
     render json: { result: true }, status: 204
