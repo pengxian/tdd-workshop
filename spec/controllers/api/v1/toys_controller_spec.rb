@@ -18,9 +18,9 @@ RSpec.describe Api::V1::ToysController, type: :controller do
     context 'when create success' do
       before :each do
         @user = create :user
+        api_authorization_header @user.auth_token
         @toy_attributes = attributes_for :toy
-        @toy_attributes[:user_id] = @user.id
-        post :create, params: { toy: @toy_attributes }
+        post :create, params: { toy: @toy_attributes, user_id: @user.id }
       end
       it { should respond_with 201 }
       it 'returns the user record' do
@@ -32,8 +32,9 @@ RSpec.describe Api::V1::ToysController, type: :controller do
     context 'when create fail with title' do
       before :each do
         @user = create :user
-        @invaild_toy_attributes = { title: nil, price: 10, user_id: @user.id }
-        post :create, params: { toy: @invaild_toy_attributes }
+        api_authorization_header @user.auth_token
+        @invaild_toy_attributes = { title: nil, price: 10 }
+        post :create, params: { toy: @invaild_toy_attributes, user_id: @user.id }
       end
       it { should respond_with 422 }
       it 'reader error json' do
@@ -41,6 +42,24 @@ RSpec.describe Api::V1::ToysController, type: :controller do
         expect(json_response[:errors].first[:detail]).to include("can't be blank")
       end
     end
+
+    describe 'PUT #update' do
+      context 'when update success' do
+        before :each do
+          @user = create :user
+          api_authorization_header @user.auth_token
+          @toy = create :toy, user: @user
+          @toy_attributes = { title: 'hahaha' }
+          put :update, params: { toy: @toy_attributes, user_id: @user.id, id: @toy.id }
+        end
+        it { should respond_with 200 }
+        it 'returns the user record' do
+          json_response = JSON.parse response.body, symbolize_names: true
+          expect(json_response[:data][:attributes][:title]).to eq @toy_attributes[:title]
+        end
+      end
+    end
+
   end
 
 end
