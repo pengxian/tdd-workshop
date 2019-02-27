@@ -4,13 +4,20 @@ RSpec.describe Api::V1::ToysController, type: :controller do
 
   describe 'Get #show' do
     before :each do
-      @toy = create :toy
+      @user = create :user
+      @toy = create :toy, user: @user
       get :show, params: { id: @toy.id }
     end
+
     it { should respond_with 200 }
+
     it 'returns a toy response' do
       json_response = JSON.parse response.body, symbolize_names: true
       expect(json_response[:data][:attributes][:title]).to eq @toy.title
+    end
+
+    it 'returns user relationships in toy' do
+      expect(json_response[:data][:relationships][:user][:data][:id].to_i).to eq @user.id
     end
   end
 
@@ -58,7 +65,10 @@ RSpec.describe Api::V1::ToysController, type: :controller do
           expect(json_response[:data][:attributes][:title]).to eq @toy_attributes[:title]
         end
       end
+      # TODO: when update fail
     end
+
+    # TODO: delete #destroy
 
   end
 

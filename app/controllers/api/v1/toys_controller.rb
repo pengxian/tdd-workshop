@@ -25,13 +25,6 @@ class Api::V1::ToysController < ApplicationController
     end
   end
 
-  def destroy
-    toy = current_user.toys.find_by(id: params[:id])
-    return render json: { errors: 'params invalid' }, status: 422 if toy.blank?
-    toy.destroy
-    head 204
-  end
-
   private
 
     def toy_params
